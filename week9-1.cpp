@@ -1,4 +1,4 @@
-#include <iostream> // 2015112083 À¯¼º±Ù
+#include <iostream> // 2015112083 ìœ ì„±ê·¼
 #include <vector>
 #include <ctime>
 #include <string>
@@ -7,24 +7,27 @@
 #define MAXNUM 500000
 using namespace std;
 char DNA[4] = { 'A', 'C', 'G', 'T' };
-int x = 50; // 50% È®·ü
-int y = 2; // 2°³±îÁö Çã¿ë
+int x = 50; // 50% í™•ë¥ 
+int y = 2; // 2ê°œê¹Œì§€ í—ˆìš©
 
 void BruteForce(string& seq, string read) {
-	int count = y; // ´Ù¸¥ ¹®ÀÚ Çã¿ë °³¼ö
-	for (int i = 0; i <= seq.size() - read.size(); i++) {
+	int count = y; // ë‹¤ë¥¸ ë¬¸ì í—ˆìš© ê°œìˆ˜
+	int seqSize = seq.size();
+	int readSize = read.size();
+	for (int i = 0; i <= seqSize - readSize; i++) {
 		int j = 0;
 		count = y;
-		for (; j < read.size(); j++) {
-			if (seq[i + j] != read[j]) { // seqÀÇ Æ¯Á¤ À§Ä¡ ¹®ÀÚ°¡ readÀÇ Æ¯Á¤ À§Ä¡ ¹®ÀÚ¿Í °°Áö ¾Ê´Ù¸é
-				count--; // ´Ù¸£¸é count °¨¼Ò
-				if(count < 0) // Çã¿ëµÈ °³¼ö¸¦ ÃÊ°úÇÏ¸é ¹İº¹ Å»Ãâ
+		for (; j < readSize; j++) {
+			if (seq[i + j] != read[j]) { // seqì˜ íŠ¹ì • ìœ„ì¹˜ ë¬¸ìê°€ readì˜ íŠ¹ì • ìœ„ì¹˜ ë¬¸ìì™€ ê°™ì§€ ì•Šë‹¤ë©´
+				count--; // ë‹¤ë¥´ë©´ count ê°ì†Œ
+				if(count < 0) // í—ˆìš©ëœ ê°œìˆ˜ë¥¼ ì´ˆê³¼í•˜ë©´ ë°˜ë³µ íƒˆì¶œ
 					break;
 			}
 		}
-		if (count >= 0) { // Æ²¸° °³¼ö°¡ 0 ÀÌÇÏÀÌ¸é À§Ä¡¸¦ Ã£Àº °Í.
-			for (int k = i; k < i + read.size(); k++) 
-				seq[k] = read[k - i]; // read·Î ‰EºÙÀÌ±â
+		if (count >= 0) { // í‹€ë¦° ê°œìˆ˜ê°€ 0 ì´í•˜ì´ë©´ ìœ„ì¹˜ë¥¼ ì°¾ì€ ê²ƒ.
+			for (int k = i; k < i + readSize; k++)
+				seq[k] = read[k - i]; // readë¡œ ë­ë¶™ì´ê¸°
+			break;
 		}
 	}
 }
@@ -32,68 +35,68 @@ void MakeSequence(string &rseq) {
 	string fName = "rseq.txt";
 	ofstream wFile(fName.data());
 
-	// ·£´ı ½ÃÄö½º »ı¼º
+	// ëœë¤ ì‹œí€€ìŠ¤ ìƒì„±
 	int random = rand() % 4;
 	int before = random;
-	rseq += DNA[random]; // Ã¹ ¿ø¼Ò ³Ö±â
+	rseq += DNA[random]; // ì²« ì›ì†Œ ë„£ê¸°
 	for (int i = 1; i < MAXNUM; i++) {
 		random = rand() % 4;
-		while (random == before) { // ´Ù¸¥ °Í ³ª¿Ã ¶§±îÁö ¹İº¹
+		while (random == before) { // ë‹¤ë¥¸ ê²ƒ ë‚˜ì˜¬ ë•Œê¹Œì§€ ë°˜ë³µ
 			random = rand() % 4;
 		}
 		rseq += DNA[random];
 		before = random;	
 	}
-	// ÆÄÀÏ¿¡ ¾²±â
+	// íŒŒì¼ì— ì“°ê¸°
 	if (wFile.is_open()) {
 		wFile << rseq;
 		wFile.close();
 	}
 }
-string MakeMySequence(string rseq, int k) { // k ±æÀÌ·Î read¸¦ ¸¸µé¾úÀ» ¶§ xÀÇ È®·ü·Î y°³ ¹®ÀÚ°¡ ´Ş¶ó¾ß ÇÑ´Ù.
+string MakeMySequence(string rseq, int k) { // k ê¸¸ì´ë¡œ readë¥¼ ë§Œë“¤ì—ˆì„ ë•Œ xì˜ í™•ë¥ ë¡œ yê°œ ë¬¸ìê°€ ë‹¬ë¼ì•¼ í•œë‹¤.
 	string myseq = "";
 	bool changed = false;
 	int i = 0;
 	for (; i <= MAXNUM - k; i+=k) {
 		string sliced = "";
-		for (int j = i; j < i + k; j++) // iºÎÅÍ k±æÀÌ ¸¸Å­ Àß¶ó³»±â
+		for (int j = i; j < i + k; j++) // ië¶€í„° kê¸¸ì´ ë§Œí¼ ì˜ë¼ë‚´ê¸°
 			sliced += rseq[j];
 		int point = k / y;
 		int cnt = y;
-		for (int j = 0; j < k; j += point) { // k±æÀÌÀÇ ¹®ÀÚ¿­À» ¶Ç y°³·Î ³ª´²¼­ °¢ Á¶°¢¸¶´Ù xÆÛ¼¾Æ® È®·ü·Î ´Ù¸¥ ¹®ÀÚ°¡ Á¸ÀçÇÏµµ·Ï
+		for (int j = 0; j < k; j += point) { // kê¸¸ì´ì˜ ë¬¸ìì—´ì„ ë˜ yê°œë¡œ ë‚˜ëˆ ì„œ ê° ì¡°ê°ë§ˆë‹¤ xí¼ì„¼íŠ¸ í™•ë¥ ë¡œ ë‹¤ë¥¸ ë¬¸ìê°€ ì¡´ì¬í•˜ë„ë¡
 			if (cnt > 0) {
-				int changeIndex = rand() % point + j; // j~(j+point) »çÀÌÀÇ ÀÎµ¦½º Áß ÇÏ³ª ¼±ÅÃ
+				int changeIndex = j; // j ì¸ë±ìŠ¤(ì‘ì€ ì¡°ê°ì˜ ì²« ì¸ë±ìŠ¤)ë¥¼ êµì²´
 
-				int canChange = rand() % 100 + 1; // 1~100 »çÀÌÀÇ 100°³ ¼ö Áß ·£´ı ¼ö »ı¼º
-				if (canChange < x) { // ·£´ı¼ö°¡ xº¸´Ù ÀÛÀ¸¸é(xÀÇ È®·ü·Î)
+				int canChange = rand() % 100 + 1; // 1~100 ì‚¬ì´ì˜ 100ê°œ ìˆ˜ ì¤‘ ëœë¤ ìˆ˜ ìƒì„±
+				if (canChange < x) { // ëœë¤ìˆ˜ê°€ xë³´ë‹¤ ì‘ìœ¼ë©´(xì˜ í™•ë¥ ë¡œ)
 					int anotherChar = rand() % 4;
 					char noThis = sliced[changeIndex];
-					while (DNA[anotherChar] == noThis) { // ±âÁ¸ ¹®ÀÚ¿Í ´Ù¸¥ ¹®ÀÚ¸¦ »ı¼º
+					while (DNA[anotherChar] == noThis) { // ê¸°ì¡´ ë¬¸ìì™€ ë‹¤ë¥¸ ë¬¸ìë¥¼ ìƒì„±
 						anotherChar = rand() % 4;
 					}
-					sliced[changeIndex] = DNA[anotherChar]; // xÀÇ È®·ü·Î ÇØ´ç ÀÎµ¦½º¸¦ º¯°æ
+					sliced[changeIndex] = DNA[anotherChar]; // xì˜ í™•ë¥ ë¡œ í•´ë‹¹ ì¸ë±ìŠ¤ë¥¼ ë³€ê²½
 				}
 			}
 			cnt--;
 		}
 		myseq += sliced;
 	}
-	for (int j = i; j < MAXNUM; j++) // µÚÀÇ Ã³¸® ¸øÇÑ ¹®ÀÚ Ãß°¡
+	for (int j = i; j < MAXNUM; j++) // ë’¤ì˜ ì²˜ë¦¬ ëª»í•œ ë¬¸ì ì¶”ê°€
 		myseq += rseq[j];
 	return myseq;
 }
 void MakeShortRead(string seq, int k, int n) {
 	int random;
-	int maxIndex = MAXNUM - k; // Ã¹ ÀÎµ¦½º°¡ µÉ ¼ö ÀÖ´Â ÃÖ´ë ¼ö
+	int maxIndex = MAXNUM - k; // ì²« ì¸ë±ìŠ¤ê°€ ë  ìˆ˜ ìˆëŠ” ìµœëŒ€ ìˆ˜
 	string shortseq = "";
 	string fName = "shortread.txt";
 	ofstream wFile(fName.data());
 
 	if (wFile.is_open()) {
 		for (int i = 0; i < n; i++) {
-			random = rand() % maxIndex; // ·£´ıÇÑ ÀÎµ¦½º
+			random = rand() % maxIndex; // ëœë¤í•œ ì¸ë±ìŠ¤
 			shortseq = "";
-			for (int j = random; j < random + k; j++) // ÇØ´ç ÀÎµ¦½ººÎÅÍ k°³ÀÇ ¹®ÀÚ¿­À» Àß¶ó¼­ ÆÄÀÏ¿¡ ÀúÀå
+			for (int j = random; j < random + k; j++) // í•´ë‹¹ ì¸ë±ìŠ¤ë¶€í„° kê°œì˜ ë¬¸ìì—´ì„ ì˜ë¼ì„œ íŒŒì¼ì— ì €ì¥
 				shortseq += seq[j];
 			wFile << shortseq << endl;
 		}
@@ -120,13 +123,13 @@ int main() {
 	MakeShortRead(mseq, k, n);
 	cout << "Done" << endl << endl;
 	
-	// º¹¿ø °úÁ¤
+	// ë³µì› ê³¼ì •
 	cout << "Calculate Difference between Rsequence and Msequence..." << endl;
-	string fseq = rseq; // rseq·ÎºÎÅÍ º¹¿øÇØ¾ß ÇÏ´Â fseq
+	string fseq = rseq; // rseqë¡œë¶€í„° ë³µì›í•´ì•¼ í•˜ëŠ” fseq
 	string shortreadFname = "shortread.txt";
 	ifstream oFile(shortreadFname.data());
 
-	clock_t start = clock(); // ½Ã°£ ÃøÁ¤ ½ÃÀÛ
+	clock_t start = clock(); // ì‹œê°„ ì¸¡ì • ì‹œì‘
 	if (oFile.is_open()) {
 		string tmp;
 
@@ -137,10 +140,10 @@ int main() {
 
 		oFile.close();
 	}
-	clock_t end = clock(); // ½Ã°£ ÃøÁ¤ Á¾·á
+	clock_t end = clock(); // ì‹œê°„ ì¸¡ì • ì¢…ë£Œ
 	cout << "Done" << endl << endl;
 
-	// °á°ú Ãâ·Â
+	// ê²°ê³¼ ì¶œë ¥
 	int count = 0;
 	for (int i = 0; i < fseq.size(); i++)
 		if (rseq[i] != fseq[i])
